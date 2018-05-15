@@ -19,6 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ControlPanel"
+            android:label="@string/title_activity_control_panel"></activity>
     </application>
 
 </manifest>
