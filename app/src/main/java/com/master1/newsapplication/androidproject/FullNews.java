@@ -1,7 +1,6 @@
 package com.master1.newsapplication.androidproject;
 
 import android.graphics.Bitmap;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 
@@ -10,26 +9,26 @@ public class FullNews
     private int id;
     private String title;
     private String date;
-    private String auhor;
+    private String author;
     private Bitmap mainPhoto;
     private ArrayList<Bitmap> photos;
     private String newsText;
 
-    public FullNews(int id, String title, String date, String auhor, String newsText, Bitmap mainPhoto, ArrayList<Bitmap> photos) {
+    public FullNews(int id, String title, String date, String author, String newsText, Bitmap mainPhoto, ArrayList<Bitmap> photos) {
         this.id = id;
         this.title = title;
         this.date = date;
-        this.auhor = auhor;
+        this.author = author;
         this.mainPhoto = mainPhoto;
         this.photos=new ArrayList<>(photos);
         this.newsText = newsText;
     }
 
-    public FullNews(int id, String title, String date, String auhor, String newsText, Bitmap mainPhoto) {
+    public FullNews(int id, String title, String date, String author, String newsText, Bitmap mainPhoto) {
         this.id = id;
         this.title = title;
         this.date = date;
-        this.auhor = auhor;
+        this.author = author;
         this.mainPhoto = mainPhoto;
         this.newsText = newsText;
     }
@@ -58,12 +57,12 @@ public class FullNews
         this.date = date;
     }
 
-    public String getAuhor() {
-        return auhor;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setAuhor(String auhor) {
-        this.auhor = auhor;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public Bitmap getMainPhoto() {
