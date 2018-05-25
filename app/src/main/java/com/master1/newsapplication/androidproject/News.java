@@ -26,6 +26,16 @@ public class News {
         this.title = title;
     }
 
+    @Override
+    public String toString() {
+        return "News{" +
+                "title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", date=" + date +
+                ", image=" + image +
+                '}';
+    }
+
     public String getText() {
         return text;
     }

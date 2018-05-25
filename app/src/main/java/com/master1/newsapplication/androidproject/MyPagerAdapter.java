@@ -1,52 +1,39 @@
 package com.master1.newsapplication.androidproject;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.view.View;
+
+import java.util.ArrayList;
 
 public class MyPagerAdapter extends FragmentPagerAdapter {
 
+    ArrayList<String> list;
 
     public MyPagerAdapter(FragmentManager fm) {
         super(fm);
+        list=new ArrayList<>();
+        list.add("sport");
+        list.add("economie");
+        list.add("test");
+        list.add("bati5");
     }
 
     @Override
     public android.support.v4.app.Fragment getItem(int position) {
+        System.out.println(position);
         Bundle bundle=new Bundle();
         newsOfCategorie categorie=new newsOfCategorie();
-        switch (position)
-        {
-            case 0:
-            {
-                bundle.putString("name","Sport");
-                break;
-            }
-            case 1:
-            {
-                bundle.putString("name","economie");
-                break;
-            }
-            case 2:
-            {
-                bundle.putString("name","absar");
-                break;
-            }
-
-        }
+        bundle.putString("name",list.get(position));
         categorie.setArguments(bundle);
         return categorie;
     }
     @Override
     public int getCount() {
-        return 3;
+        return list.size();
     }
 
     public CharSequence getPageTitle(int position) {
-        return "test";
+       return list.get(position).toUpperCase();
     }
 }

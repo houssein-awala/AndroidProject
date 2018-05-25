@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class NewsAdapter extends ArrayAdapter {
         this.objects=objects;
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -31,10 +34,18 @@ public class NewsAdapter extends ArrayAdapter {
         TextView title=(TextView)rowView.findViewById(R.id.title);
         TextView text=(TextView)rowView.findViewById(R.id.text);
         TextView date=(TextView)rowView.findViewById(R.id.date);
-      //  ImageView image=(ImageView)rowView.findViewById(R.id.image);
+        ImageView image=(ImageView)rowView.findViewById(R.id.image);
         title.setText(objects.get(position).getTitle());
         text.setText(objects.get(position).getText());
         date.setText(objects.get(position).getDate().toString());
+
+       /* Storage s=new Storage(context);
+        try {
+            s.getImage(image);
+        } catch (IOException e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }*/
 
         return rowView;
     }
