@@ -19,8 +19,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.URL;
@@ -29,7 +32,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class newsOfCategorie extends Fragment{
-    ViewGroup viewGroup;
     String categorieName;
     private ArrayList<News> list;
     private NewsAdapter adapter;
@@ -46,28 +48,57 @@ public class newsOfCategorie extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        viewGroup=container;
         return inflater.inflate(R.layout.news_of_categorie,container,false);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Bundle bundle=getArguments();
         categorieName=bundle.getString("name");
-        TextView textView=(TextView)viewGroup.findViewById(R.id.nameOfCategorie);
+        TextView textView=(TextView)view.findViewById(R.id.nameOfCategorie);
         textView.setText(categorieName);
         adapter=new NewsAdapter(getActivity(),R.layout.news_of_categorie,list);
-        ListView listView=(ListView)viewGroup.findViewById(R.id.list_view);
+        ListView listView=(ListView)view.findViewById(R.id.list_view);
         listView.setAdapter(adapter);
         getAllNews(adapter);
     }
+
     public void getAllNews(final NewsAdapter adapter)
     {
         if (categorieName==null)
             return;
+        /*final DocumentReference docRef = db.collection("categories")
+                .document(categorieName)
+                .collection("News").document();
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    if (map.containsKey(snapshot.getId())) {
+
+                    } else {
+                        News news = null;
+                        news = new News(snapshot.getString("title"), snapshot.getString("text"), snapshot.getDate("date"), null);
+                        list.add(news);
+                        map.put(snapshot.getId(), news);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                } else {
+                    Log.d("", "Current data: null");
+                }
+            }
+        });*/
+
         db.collection("categories")
-                .document("sport")
+                .document(categorieName)
                 .collection("News")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -96,7 +127,6 @@ public class newsOfCategorie extends Fragment{
                         }
                     }
                 });
-
 
         /*myRef.addValueEventListener(new ValueEventListener() {
 
