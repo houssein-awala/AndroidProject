@@ -17,9 +17,9 @@ import java.util.List;
 public class NewsAdapter extends ArrayAdapter {
     private final Context context;
     private final int resourceID;
-    ArrayList<News> objects;
+    ArrayList<FullNews> objects;
 
-    public NewsAdapter(@NonNull Context context, int resource, @NonNull ArrayList<News> objects) {
+    public NewsAdapter(@NonNull Context context, int resource, @NonNull ArrayList<FullNews> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resourceID = resource;
@@ -36,7 +36,7 @@ public class NewsAdapter extends ArrayAdapter {
         TextView date=(TextView)rowView.findViewById(R.id.date);
         ImageView image=(ImageView)rowView.findViewById(R.id.image);
         title.setText(objects.get(position).getTitle());
-        text.setText(objects.get(position).getText());
+        text.setText(objects.get(position).getNewsText());
         date.setText(objects.get(position).getDate().toString());
 
        /* Storage s=new Storage(context);
