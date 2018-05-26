@@ -14,7 +14,7 @@
 
     <header
         android:fragment="com.master1.newsapplication.androidproject.ControlPanel$DataSyncPreferenceFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_data_sync" />
+        android:icon="@drawable/ic_account"
+        android:title="@string/account" />
 
 </preference-headers>
