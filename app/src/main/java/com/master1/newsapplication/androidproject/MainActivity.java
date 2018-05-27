@@ -54,8 +54,11 @@ public class MainActivity extends AppCompatActivity
     private NewsAdapter adapter;
     private FirebaseDatabase database;
     private HashMap<String,News> map;
-    private ArrayList<String> nameOfCategoriesFromFirebase;
+    private  ArrayList<String> nameOfCategoriesFromFirebase;
+
     // release listener in onStop
+
+
     @Override
     public void onStop() {
         super.onStop();
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         /* AUTHENTICATION
           *START
         */
+        nameOfCategoriesFromFirebase= new ArrayList<>();
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -111,7 +115,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        //call method remplir items
+        addMenuItemInNavMenuDrawer();
 
         //SETUP THE PAGER
 
@@ -132,6 +137,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -167,21 +173,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        nameOfCategoriesFromFirebase= getName();
+      // int id = item.getItemId();
+         /*  if(id==(Integer.getInteger("Sport")))
+            {
+                Toast.makeText(this,"Sport",Toast.LENGTH_SHORT).show();
+            }
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+            else{
 
-        } else if (id == R.id.nav_slideshow) {
+            }*/
+      String t=item.getTitle().toString();
+      for(String categorie : nameOfCategoriesFromFirebase) {
+          if (t == categorie) {
+              Toast.makeText(this, categorie, Toast.LENGTH_SHORT).show();
+          } else {
 
-        } else if (id == R.id.nav_manage) {
+          }
+      }
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -213,6 +223,34 @@ public class MainActivity extends AppCompatActivity
     {
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
+    }
+
+    //methode mn database btrj3 arrayist mn lcategorie
+    public ArrayList<String> getName()
+    {
+        ArrayList<String> categories=new ArrayList<>();
+        categories.add("Sport");
+        categories.add("Arts");
+        categories.add("Policy");
+        categories.add("Economie");
+        return categories;
+    }
+    //methode pour remplir navigation view dynamic
+    private void addMenuItemInNavMenuDrawer() {
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+
+        Menu menu = navView.getMenu();
+        Menu submenu = menu.addSubMenu("Categorie");
+        ArrayList<String> categories=getName();
+        int i=0;
+        for(String categorie  : categories)
+        {
+         //   submenu.add(categorie);
+        //    submenu.add(0, Integer.parseInt(categorie),1,categorie);
+          submenu.add(R.id.gp,1,1,categorie);
+        }
+
+        navView.invalidate();
     }
 
 
