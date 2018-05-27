@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -99,6 +100,18 @@ public class newsTable extends SQLiteOpenHelper {
 
     public Date getMaxDate(String categorie)
     {
-        return new Date(2018,5,20,0,0,0);
+        SQLiteDatabase db=getReadableDatabase();
+        Date max=new Date(0);
+        Cursor cursor=db.query(NEWS_TABLE,new String[]{KEY_DATE},KEY_CATEGORIE+" = ?",new String[]{categorie},null,null,null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Date date;
+                date=new Date(cursor.getString(0));
+                if(date.after(max))
+                    max=date;
+            }while (cursor.moveToNext());
+        }
+        return max;
     }
 }

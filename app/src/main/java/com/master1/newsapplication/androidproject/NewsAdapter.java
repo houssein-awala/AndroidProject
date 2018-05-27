@@ -34,11 +34,13 @@ public class NewsAdapter extends ArrayAdapter {
         TextView title=(TextView)rowView.findViewById(R.id.title);
         TextView text=(TextView)rowView.findViewById(R.id.text);
         TextView date=(TextView)rowView.findViewById(R.id.date);
+        //TextView id=(TextView)rowView.findViewById(R.id.id_news);
         ImageView image=(ImageView)rowView.findViewById(R.id.image);
         title.setText(objects.get(position).getTitle());
         text.setText(objects.get(position).getNewsText());
         date.setText(objects.get(position).getDate().toString());
-
+        //id.setText(objects.get(position).getId());
+        //id.setVisibility(View.INVISIBLE);
        /* Storage s=new Storage(context);
         try {
             s.getImage(image);
