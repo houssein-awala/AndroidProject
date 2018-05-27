@@ -24,7 +24,7 @@ public class NewsDetails extends Fragment
     {
         View view=inflater.inflate(R.layout.news_details,container,false);
         Bundle bundle=getArguments();
-        news=(FullNews) bundle.get("news");
+        news=(FullNews) bundle.getSerializable("news");
         title=view.findViewById(R.id.detailsTitle);
         title.setText(news.getTitle());
         date=view.findViewById(R.id.detailsDate);
@@ -35,7 +35,7 @@ public class NewsDetails extends Fragment
         mainPhoto=view.findViewById(R.id.detailsMainPhoto);
         mainPhoto.setImageBitmap(news.getMainPhoto());
         photos=view.findViewById(R.id.detailsPhotos);
-        getPhotos();
+        //getPhotos();
         return view;
     }
 

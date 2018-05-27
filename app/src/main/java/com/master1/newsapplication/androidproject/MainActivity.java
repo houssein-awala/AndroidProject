@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -215,5 +217,16 @@ public class MainActivity extends AppCompatActivity
         pager.setAdapter(adapter);
     }
 
+    public  void showDetails(FullNews news)
+    {
+        Bundle bundle=new Bundle();
+        bundle.putSerializable("news",news);
+        NewsDetails details=new NewsDetails();
+        details.setArguments(bundle);
+        android.app.FragmentManager manager=getFragmentManager();
+        android.app.FragmentTransaction transaction=manager.beginTransaction();
+        transaction.add(R.id.Fullcontainer,details);
+        transaction.commit();
+    }
 
 }

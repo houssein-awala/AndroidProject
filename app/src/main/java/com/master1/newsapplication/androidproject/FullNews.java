@@ -2,10 +2,11 @@ package com.master1.newsapplication.androidproject;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class FullNews
+public class FullNews implements Serializable
 {
     private String id;
     private String title;
