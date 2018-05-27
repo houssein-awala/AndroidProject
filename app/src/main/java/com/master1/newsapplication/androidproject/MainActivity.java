@@ -236,5 +236,16 @@ public class MainActivity extends AppCompatActivity
 
         navView.invalidate();
     }
+    public  void showDetails(FullNews news)
+    {
+        Bundle bundle=new Bundle();
+        bundle.putSerializable("news",news);
+        NewsDetails details=new NewsDetails();
+        details.setArguments(bundle);
+        android.app.FragmentManager manager=getFragmentManager();
+        android.app.FragmentTransaction transaction=manager.beginTransaction();
+        transaction.add(R.id.Fullcontainer,details);
+        transaction.commit();
+     }
 
 }
