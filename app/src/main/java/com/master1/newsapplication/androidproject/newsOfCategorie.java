@@ -27,20 +27,22 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class newsOfCategorie extends Fragment{
     String categorieName;
-    private ArrayList<News> list;
+    private ArrayList<FullNews> list;
     private NewsAdapter adapter;
     private FirebaseDatabase database;
-    private HashMap<String,News> map;
+    private HashSet<String> keys;
     private FirebaseFirestore db;
     public newsOfCategorie() {
         list=new ArrayList<>();
-        map=new HashMap<>();
+        keys=new HashSet<>();
         db = FirebaseFirestore.getInstance();
     }
 
@@ -55,9 +57,7 @@ public class newsOfCategorie extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle=getArguments();
-        categorieName=bundle.getString("name");
-        TextView textView=(TextView)view.findViewById(R.id.nameOfCategorie);
-        textView.setText(categorieName);
+        categorieName=bundle.getString("name");;
         adapter=new NewsAdapter(getActivity(),R.layout.news_of_categorie,list);
         ListView listView=(ListView)view.findViewById(R.id.list_view);
         listView.setAdapter(adapter);
@@ -96,10 +96,24 @@ public class newsOfCategorie extends Fragment{
                 }
             }
         });*/
-
+        newsTable table=new newsTable(getContext());
+        // table.insertNews(new FullNews(1,"title","2015-04-01","HUSSEIN AWALA","TEXT","sport","/","/"));
+        ArrayList<FullNews> fromDB=table.getAllNewOfCategorie(categorieName);
+        for (FullNews news:fromDB)
+        {
+            if (!keys.contains(news.getId())) {
+                list.add(0,news);
+               // keys.add(news.getId());
+            }
+        }
+        System.out.println(table.getMaxDate(categorieName));
+        adapter.notifyDataSetChanged();
         db.collection("categories")
                 .document(categorieName)
                 .collection("News")
+                .whereLessThan("date",table.getMaxDate(categorieName))
+                //.whereEqualTo("title","test Title")
+                .orderBy("date")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -110,13 +124,11 @@ public class newsOfCategorie extends Fragment{
 
                             for(DocumentSnapshot d:documentSnapshots.getDocuments())
                             {
-                                if (map.containsKey(d.getId())) {
-
-                                } else {
-                                    News news = null;
-                                    news = new News(d.getString("title"), d.getString("text"), d.getDate("date"), null);
-                                    list.add(news);
-                                    map.put(d.getId(),news);
+                                if (!keys.contains(d.getId())) {
+                                    FullNews news = null;
+                                    news = new FullNews(d.getId(), d.getString("title"), d.getDate("date"), "", d.getString("text"), "");
+                                    list.add(0, news);
+                                    keys.add(d.getId());
                                     adapter.notifyDataSetChanged();
                                 }
                             }

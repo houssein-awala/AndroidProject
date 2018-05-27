@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private NewsAdapter adapter;
     private FirebaseDatabase database;
     private HashMap<String,News> map;
+    private ArrayList<String> nameOfCategoriesFromFirebase;
     // release listener in onStop
     @Override
     public void onStop() {
@@ -119,6 +120,13 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(pager);
 
+        //test db
+
+        newsTable table=new newsTable(this);
+        table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
+        //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
+
+        //end test
     }
 
     @Override
