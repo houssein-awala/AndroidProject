@@ -54,8 +54,8 @@ public class Storage {
 
     public void DownloadSub() throws IOException {
 
-        ArrayList<String> paths=getMn7sen();
         StorageReference dir = mStorageRef.child(news.getPathPhotos());
+        ArrayList<String> paths=new ArrayList<>();//getmn7sen();
         for(String mp:paths)
         {
             StorageReference riversRef = dir.child(mp);

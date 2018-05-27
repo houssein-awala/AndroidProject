@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,6 +64,13 @@ public class newsOfCategorie extends Fragment{
         ListView listView=(ListView)view.findViewById(R.id.list_view);
         listView.setAdapter(adapter);
         getAllNews(adapter);
+        SwipeRefreshLayout swipeRefreshLayout=(SwipeRefreshLayout)view.findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getAllNews(adapter);
+            }
+        });
     }
 
     public void getAllNews(final NewsAdapter adapter)
@@ -96,23 +105,21 @@ public class newsOfCategorie extends Fragment{
                 }
             }
         });*/
-        newsTable table=new newsTable(getContext());
+        final newsTable table=new newsTable(getContext());
         // table.insertNews(new FullNews(1,"title","2015-04-01","HUSSEIN AWALA","TEXT","sport","/","/"));
         ArrayList<FullNews> fromDB=table.getAllNewOfCategorie(categorieName);
         for (FullNews news:fromDB)
         {
             if (!keys.contains(news.getId())) {
                 list.add(0,news);
-               // keys.add(news.getId());
+                keys.add(news.getId());
             }
         }
-        System.out.println(table.getMaxDate(categorieName));
         adapter.notifyDataSetChanged();
         db.collection("categories")
                 .document(categorieName)
                 .collection("News")
-                .whereLessThan("date",table.getMaxDate(categorieName))
-                //.whereEqualTo("title","test Title")
+                .whereGreaterThan("date",table.getMaxDate(categorieName) )
                 .orderBy("date")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -126,14 +133,25 @@ public class newsOfCategorie extends Fragment{
                             {
                                 if (!keys.contains(d.getId())) {
                                     FullNews news = null;
-                                    news = new FullNews(d.getId(), d.getString("title"), d.getDate("date"), "", d.getString("text"), "");
+                                    news = new FullNews(d.getId(), d.getString("title"), d.getDate("date"), "", d.getString("text"), categorieName,"","");
+                                    System.out.println(d.getDate("date"));
                                     list.add(0, news);
                                     keys.add(d.getId());
+                                   table.insertNews(news);
                                     adapter.notifyDataSetChanged();
                                 }
                             }
-
+                            if(getView()!=null) {
+                                SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe);
+                                if (swipeRefreshLayout.isRefreshing())
+                                    swipeRefreshLayout.setRefreshing(false);
+                            }
                         } else {
+                            if (getView()!=null) {
+                                SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe);
+                                if (swipeRefreshLayout.isRefreshing())
+                                    swipeRefreshLayout.setRefreshing(false);
+                            }
                             Log.w("Error", "Error getting documents.", task.getException());
                             Toast.makeText(getContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }

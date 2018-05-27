@@ -123,9 +123,9 @@ public class MainActivity extends AppCompatActivity
         //test db
 
         newsTable table=new newsTable(this);
-        table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
+        //table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
         //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
-
+        System.out.println("MAX  "+table.getMaxDate("sport"));
         //end test
     }
 
