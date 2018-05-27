@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //call methode
+        addMenuItemInNavMenuDrawer();
 
         //SETUP THE PAGER
 
@@ -167,26 +169,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        nameOfCategoriesFromFirebase = getName();
+        String t = item.getTitle().toString();
+        for (String categorie : nameOfCategoriesFromFirebase) {
+            if (t == categorie) {
+                Toast.makeText(this, categorie, Toast.LENGTH_SHORT).show();
+            } else {
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            }
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+        }
 
     @Override
     protected void onStart() {
@@ -214,6 +209,32 @@ public class MainActivity extends AppCompatActivity
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
     }
+    //methode mn database btrj3 arrayist mn lcategorie
+    public ArrayList<String> getName()
+    {
+        ArrayList<String> categories=new ArrayList<>();
+        categories.add("Sport");
+        categories.add("Arts");
+        categories.add("Policy");
+        categories.add("Economie");
+        return categories;
+    }
+    //methode pour remplir navigation view dynamic
+    private void addMenuItemInNavMenuDrawer() {
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
 
+        Menu menu = navView.getMenu();
+        Menu submenu = menu.addSubMenu("Categorie");
+        ArrayList<String> categories=getName();
+        int i=0;
+        for(String categorie  : categories)
+        {
+            //   submenu.add(categorie);
+            //    submenu.add(0, Integer.parseInt(categorie),1,categorie);
+            submenu.add(R.id.gp,1,1,categorie);
+        }
+
+        navView.invalidate();
+    }
 
 }
