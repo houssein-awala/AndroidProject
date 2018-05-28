@@ -1,24 +1,23 @@
 package com.master1.newsapplication.androidproject;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.ListView;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,23 +25,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import org.json.JSONObject;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -116,11 +104,12 @@ public class MainActivity extends AppCompatActivity
         addMenuItemInNavMenuDrawer();
 
         //SETUP THE PAGER
+        PagerFrag frag=new PagerFrag();
+        FragmentManager manager=getSupportFragmentManager();
+        FragmentTransaction trans=manager.beginTransaction();
+        trans.replace(R.id.Fullcontainer,frag);
+        trans.commit();
 
-        ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
-        setupWithViewPager(pager);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(pager);
 
         //test db
 
@@ -242,9 +231,10 @@ public class MainActivity extends AppCompatActivity
         bundle.putSerializable("news",news);
         NewsDetails details=new NewsDetails();
         details.setArguments(bundle);
-        android.app.FragmentManager manager=getFragmentManager();
-        android.app.FragmentTransaction transaction=manager.beginTransaction();
-        transaction.add(R.id.Fullcontainer,details);
+        FragmentManager manager=getSupportFragmentManager();
+        FragmentTransaction transaction=manager.beginTransaction();
+        transaction.replace(R.id.Fullcontainer,details);
+        transaction.addToBackStack(null);
         transaction.commit();
      }
 

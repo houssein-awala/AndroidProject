@@ -1,9 +1,9 @@
 package com.master1.newsapplication.androidproject;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,30 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.net.URL;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class newsOfCategorie extends Fragment{
@@ -54,6 +41,7 @@ public class newsOfCategorie extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        System.out.println("onCreateView  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return inflater.inflate(R.layout.news_of_categorie,container,false);
     }
 
@@ -170,4 +158,27 @@ public class newsOfCategorie extends Fragment{
                     }
                 });
 }
+
+public void onStart() {
+
+    super.onStart();
+    System.out.println("onStart  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+}
+
+public void onPause() {
+
+    super.onPause();
+    System.out.println("onPause  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+}
+public void onStop() {
+
+    super.onStop();
+    System.out.println("onStop  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+}
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        System.out.println("onDestroy  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    }
 }
