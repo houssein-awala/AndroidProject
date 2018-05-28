@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -114,9 +115,9 @@ public class MainActivity extends AppCompatActivity
         //test db
 
         newsTable table=new newsTable(this);
-        table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
+        //table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
         //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
-
+        System.out.println("max " +table.getMaxDate("sport"));
         //end test
     }
 

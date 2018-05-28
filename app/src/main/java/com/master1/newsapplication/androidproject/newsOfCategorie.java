@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -116,12 +117,22 @@ public class newsOfCategorie extends Fragment{
             }
         }
         adapter.notifyDataSetChanged();
-        db.collection("categories")
-                .document(categorieName)
-                .collection("News")
-                .whereGreaterThan("date",table.getMaxDate(categorieName) )
-                .orderBy("date")
-                .get()
+        Query q;
+        if(table.getMaxDate(categorieName)!=null)
+        {
+            q=db.collection("categories")
+                    .document(categorieName)
+                    .collection("News")
+                    .whereGreaterThan("date",table.getMaxDate(categorieName) )
+                    .orderBy("date");
+        }
+        else {
+            q=db.collection("categories")
+                    .document(categorieName)
+                    .collection("News")
+                    .orderBy("date");
+        }
+                q.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -157,6 +168,7 @@ public class newsOfCategorie extends Fragment{
                         }
                     }
                 });
+
 }
 
 public void onStart() {

@@ -101,16 +101,18 @@ public class newsTable extends SQLiteOpenHelper {
     public Date getMaxDate(String categorie)
     {
         SQLiteDatabase db=getReadableDatabase();
-        Date max=new Date(0);
+        Date max=null;
         Cursor cursor=db.query(NEWS_TABLE,new String[]{KEY_DATE},KEY_CATEGORIE+" = ?",new String[]{categorie},null,null,null);
         if (cursor.moveToFirst())
         {
-            do {
+            max=new Date(cursor.getString(0));
+
+            while (cursor.moveToNext()) {
                 Date date;
                 date=new Date(cursor.getString(0));
                 if(date.after(max))
                     max=date;
-            }while (cursor.moveToNext());
+            }
         }
         return max;
     }
