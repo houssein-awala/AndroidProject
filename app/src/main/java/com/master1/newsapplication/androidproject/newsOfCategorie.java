@@ -42,7 +42,6 @@ public class newsOfCategorie extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        System.out.println("onCreateView  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return inflater.inflate(R.layout.news_of_categorie,container,false);
     }
 
@@ -170,27 +169,4 @@ public class newsOfCategorie extends Fragment{
                 });
 
 }
-
-public void onStart() {
-
-    super.onStart();
-    System.out.println("onStart  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-}
-
-public void onPause() {
-
-    super.onPause();
-    System.out.println("onPause  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-}
-public void onStop() {
-
-    super.onStop();
-    System.out.println("onStop  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-}
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        System.out.println("onDestroy  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    }
 }
