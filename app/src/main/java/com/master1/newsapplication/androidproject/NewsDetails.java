@@ -1,5 +1,6 @@
 package com.master1.newsapplication.androidproject;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -20,22 +21,22 @@ public class NewsDetails extends Fragment
     LinearLayout photos;
     public NewsDetails(){super();}
 
-    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState)
+    public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState)
     {
         View view=inflater.inflate(R.layout.news_details,container,false);
         Bundle bundle=getArguments();
         news=(FullNews) bundle.getSerializable("news");
-        title=view.findViewById(R.id.detailsTitle);
-        title.setText(news.getTitle());
-        date=view.findViewById(R.id.detailsDate);
-        date.setText(news.getDate().toString());
-        author=view.findViewById(R.id.detailsAuthor);
-        text=view.findViewById(R.id.detailsText);
-        text.setText(news.getNewsText());
-        mainPhoto=view.findViewById(R.id.detailsMainPhoto);
-        mainPhoto.setImageBitmap(news.getMainPhoto());
-        photos=view.findViewById(R.id.detailsPhotos);
-        //getPhotos();
+            title=view.findViewById(R.id.detailsTitle);
+            title.setText(news.getTitle());
+            date=view.findViewById(R.id.detailsDate);
+            date.setText(news.getDate().toString());
+            author=view.findViewById(R.id.detailsAuthor);
+            text=view.findViewById(R.id.detailsText);
+            text.setText(news.getNewsText());
+            mainPhoto=view.findViewById(R.id.detailsMainPhoto);
+            mainPhoto.setImageBitmap(news.getMainPhoto());
+            photos=view.findViewById(R.id.detailsPhotos);
+            //getPhotos();
         return view;
     }
 

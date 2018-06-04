@@ -1,13 +1,14 @@
 package com.master1.newsapplication.androidproject;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -27,10 +28,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity
@@ -112,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         trans.commit();
 
 
-        //test db
+            //test db
 
         newsTable table=new newsTable(this);
         //table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
@@ -157,15 +156,22 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         nameOfCategoriesFromFirebase = getName();
         String t = item.getTitle().toString();
         for (String categorie : nameOfCategoriesFromFirebase) {
-            if (t == categorie) {
-                Toast.makeText(this, categorie, Toast.LENGTH_SHORT).show();
-            } else {
-
+            if (t.toLowerCase() .equals( categorie.toLowerCase())) {
+                Bundle bundle=new Bundle();
+                newsOfCategorie cat=new newsOfCategorie();
+                bundle.putString("name",categorie);
+                cat.setArguments(bundle);
+                FragmentManager manager=getSupportFragmentManager();
+                FragmentTransaction transaction=manager.beginTransaction();
+                transaction.replace(R.id.Fullcontainer, cat);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                break;
             }
         }
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -203,10 +209,10 @@ public class MainActivity extends AppCompatActivity
     public ArrayList<String> getName()
     {
         ArrayList<String> categories=new ArrayList<>();
-        categories.add("Sport");
-        categories.add("Arts");
-        categories.add("Policy");
-        categories.add("Economie");
+        categories.add("sport");
+        categories.add("arts");
+        categories.add("policy");
+        categories.add("economie");
         return categories;
     }
     //methode pour remplir navigation view dynamic
@@ -221,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         {
             //   submenu.add(categorie);
             //    submenu.add(0, Integer.parseInt(categorie),1,categorie);
-            submenu.add(R.id.gp,1,1,categorie);
+            submenu.add(R.id.gp,1,1,categorie.toUpperCase());
         }
 
         navView.invalidate();
@@ -234,8 +240,14 @@ public class MainActivity extends AppCompatActivity
         details.setArguments(bundle);
         FragmentManager manager=getSupportFragmentManager();
         FragmentTransaction transaction=manager.beginTransaction();
-        transaction.replace(R.id.Fullcontainer,details);
-        transaction.addToBackStack(null);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            transaction.replace(R.id.frag2, details);
+        }
+        else {
+
+            transaction.replace(R.id.Fullcontainer, details);
+            transaction.addToBackStack(null);
+        }
         transaction.commit();
      }
 
