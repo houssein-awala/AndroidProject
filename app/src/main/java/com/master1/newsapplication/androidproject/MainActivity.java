@@ -161,10 +161,17 @@ public class MainActivity extends AppCompatActivity
         nameOfCategoriesFromFirebase = getName();
         String t = item.getTitle().toString();
         for (String categorie : nameOfCategoriesFromFirebase) {
-            if (t .equals( categorie)) {
-                Toast.makeText(this, categorie, Toast.LENGTH_SHORT).show();
-            } else {
-
+            if (t.toLowerCase() .equals( categorie.toLowerCase())) {
+                Bundle bundle=new Bundle();
+                newsOfCategorie cat=new newsOfCategorie();
+                bundle.putString("name",categorie);
+                cat.setArguments(bundle);
+                FragmentManager manager=getSupportFragmentManager();
+                FragmentTransaction transaction=manager.beginTransaction();
+                transaction.replace(R.id.Fullcontainer, cat);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                break;
             }
         }
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -202,10 +209,10 @@ public class MainActivity extends AppCompatActivity
     public ArrayList<String> getName()
     {
         ArrayList<String> categories=new ArrayList<>();
-        categories.add("Sport");
-        categories.add("Arts");
-        categories.add("Policy");
-        categories.add("Economie");
+        categories.add("sport");
+        categories.add("arts");
+        categories.add("policy");
+        categories.add("economie");
         return categories;
     }
     //methode pour remplir navigation view dynamic
@@ -220,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         {
             //   submenu.add(categorie);
             //    submenu.add(0, Integer.parseInt(categorie),1,categorie);
-            submenu.add(R.id.gp,1,1,categorie);
+            submenu.add(R.id.gp,1,1,categorie.toUpperCase());
         }
 
         navView.invalidate();
