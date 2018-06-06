@@ -37,6 +37,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -129,6 +132,31 @@ public class MainActivity extends AppCompatActivity
         //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
 
         //end test
+        try {
+            FileInputStream fin = openFileInput("mot.txt");
+            InputStreamReader isr = new InputStreamReader(fin);
+            String str="";
+            int i=0;
+            while((i=isr.read())!=-1)
+                str+=(char)i;
+            System.out.println("fileeeeeeeeeeeeeMain" + str);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            FileInputStream fin = openFileInput("category.txt");
+            InputStreamReader isr = new InputStreamReader(fin);
+            String str="";
+            int i=0;
+            while((i=isr.read())!=-1)
+                str+=(char)i;
+            //  String category = new String(inputbuffer);
+            System.out.println("fileeeeeeeeeeeeeMain" + str);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
