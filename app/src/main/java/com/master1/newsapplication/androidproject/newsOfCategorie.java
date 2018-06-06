@@ -1,9 +1,9 @@
 package com.master1.newsapplication.androidproject;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,30 +11,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.net.URL;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class newsOfCategorie extends Fragment{
@@ -128,12 +116,22 @@ public class newsOfCategorie extends Fragment{
             }
         }
         adapter.notifyDataSetChanged();
-        db.collection("categories")
-                .document(categorieName)
-                .collection("News")
-                .whereGreaterThan("date",table.getMaxDate(categorieName) )
-                .orderBy("date")
-                .get()
+        Query q;
+        if(table.getMaxDate(categorieName)!=null)
+        {
+            q=db.collection("categories")
+                    .document(categorieName)
+                    .collection("News")
+                    .whereGreaterThan("date",table.getMaxDate(categorieName) )
+                    .orderBy("date");
+        }
+        else {
+            q=db.collection("categories")
+                    .document(categorieName)
+                    .collection("News")
+                    .orderBy("date");
+        }
+                q.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -169,5 +167,6 @@ public class newsOfCategorie extends Fragment{
                         }
                     }
                 });
+
 }
 }

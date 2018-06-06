@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class newsTable extends SQLiteOpenHelper {
@@ -25,8 +26,10 @@ public class newsTable extends SQLiteOpenHelper {
     private static final String KEY_MAIN_PHOTO="photo";
     private static final String KEY_PHOTOS="photos";
 
+    private static HashMap<String,Date> lastUpdateDate;
     public newsTable(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        lastUpdateDate=new HashMap<>();
     }
 
     @Override
@@ -101,17 +104,52 @@ public class newsTable extends SQLiteOpenHelper {
     public Date getMaxDate(String categorie)
     {
         SQLiteDatabase db=getReadableDatabase();
-        Date max=new Date(0);
+        Date max=null;
         Cursor cursor=db.query(NEWS_TABLE,new String[]{KEY_DATE},KEY_CATEGORIE+" = ?",new String[]{categorie},null,null,null);
         if (cursor.moveToFirst())
         {
-            do {
+            max=new Date(cursor.getString(0));
+
+            while (cursor.moveToNext()) {
                 Date date;
                 date=new Date(cursor.getString(0));
                 if(date.after(max))
                     max=date;
-            }while (cursor.moveToNext());
+            }
         }
         return max;
+    }
+    public void update(ArrayList<FullNews> newsList)
+    {
+        SQLiteDatabase db=getWritableDatabase();
+        for (FullNews news:newsList)
+        {
+            ContentValues values=new ContentValues();
+            values.put(KEY_AUTHOR,news.getAuthor());
+            values.put(KEY_DATE,news.getDate().toString());
+            values.put(KEY_TITLE,news.getTitle());
+            values.put(KEY_TEXT,news.getNewsText());
+            values.put(KEY_MAIN_PHOTO,news.getPathMainPhot());
+            values.put(KEY_PHOTOS,news.getPathPhotos());
+            db.update(NEWS_TABLE,values,KEY_ID+" = ? AND "+KEY_CATEGORIE+" = ?",new String[]{news.getId(),news.getCategorie()});
+        }
+    }
+    public Date getLastUpdateDate(String categorie)
+    {
+         return lastUpdateDate.get(categorie);
+    }
+
+    public void updateLastUpdateDate(String categorie,Date date)
+    {
+        lastUpdateDate.put(categorie,date);
+    }
+
+    public void deleteDeletedNews(ArrayList<NewsIdentifier> newsIdentifiers)
+    {
+        SQLiteDatabase db=getWritableDatabase();
+        for (NewsIdentifier news:newsIdentifiers)
+        {
+            db.delete(NEWS_TABLE,KEY_ID+" = ? AND "+KEY_CATEGORIE+" = ?",new String[]{news.getId(),news.getCategorie()});
+        }
     }
 }

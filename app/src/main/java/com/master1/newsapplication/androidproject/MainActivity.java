@@ -1,8 +1,6 @@
 package com.master1.newsapplication.androidproject;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -39,17 +37,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.master1.newsapplication.androidproject.ControlPanel.background_color;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,7 +72,6 @@ public class MainActivity extends AppCompatActivity
         /* AUTHENTICATION
           *START
         */
-        System.out.println("bati5");
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -117,7 +109,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView  navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //call methode
@@ -137,46 +129,6 @@ public class MainActivity extends AppCompatActivity
         //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
 
         //end test
-        try {
-            FileInputStream fin = openFileInput("mot.txt");
-            InputStreamReader isr = new InputStreamReader(fin);
-            String str="";
-            int i=0;
-            while((i=isr.read())!=-1)
-                str+=(char)i;
-            System.out.println("fileeeeeeeeeeeeeMain" + str);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            FileInputStream fin = openFileInput("category.txt");
-            InputStreamReader isr = new InputStreamReader(fin);
-            String str="";
-            int i=0;
-            while((i=isr.read())!=-1)
-                str+=(char)i;
-          //  String category = new String(inputbuffer);
-            System.out.println("fileeeeeeeeeeeeeMain" + str);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            FileInputStream fin = openFileInput("toolbar.txt");
-            InputStreamReader isr = new InputStreamReader(fin);
-            String str="";
-            int i=0;
-            while((i=isr.read())!=-1)
-                str+=(char)i;
-            //  String category = new String(inputbuffer);
-            System.out.println("fileeeeeeeeeeeeeMain" + str);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        //pSystem.out.println(new ControlPanel().getBackgroundcolor()+"ioioio");
-      // System.out.println( ControlPanel.GeneralPreferenceFragment.background_color+"hiiiiii");
     }
 
     @Override
@@ -295,6 +247,5 @@ public class MainActivity extends AppCompatActivity
         transaction.add(R.id.Fullcontainer,details);
         transaction.commit();
      }
-
 
 }
