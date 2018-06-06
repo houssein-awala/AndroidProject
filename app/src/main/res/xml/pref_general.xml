@@ -1,4 +1,8 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:dslv="http://schemas.android.com/apk/res-auto"
+    xmlns:com.woxthebox="http://schemas.android.com/tools">
 
     <SwitchPreference
         android:defaultValue="true"
@@ -29,5 +33,26 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_title_add_friends_to_messages" />
+    <com.skydoves.colorpickerpreference.ColorPickerPreference
+        android:key="BackgroundColorPickerPreference"
+        android:title="@string/background_Color"
+        android:summary="@string/changes_background_color"
+        app:preference_dialog_title="@string/Background_ColorPickerDialog"
+        app:preference_dialog_positive="@string/confirm"
+        app:preference_dialog_negative="@string/cancel"
+        app:preference_palette="@drawable/palette"
+        app:preference_selector="@drawable/wheel"
+        app:default_color="@color/colorPrimary"/>
+
+    <com.skydoves.colorpickerpreference.ColorPickerPreference
+        android:key="ToolbarColorPickerPreference"
+        android:title="@string/Toolbar_Color"
+        android:summary="@string/changes_toolbar_color"
+        app:preference_dialog_title="Toolbar ColorPickerDialog"
+        app:preference_dialog_positive="@string/confirm"
+        app:preference_dialog_negative="@string/cancel"
+        app:preference_palette="@drawable/palette"
+        app:preference_selector="@drawable/wheel"
+        app:default_color="@color/colorPrimary"/>
 
 </PreferenceScreen>

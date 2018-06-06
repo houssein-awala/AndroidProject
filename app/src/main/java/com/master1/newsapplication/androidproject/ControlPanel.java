@@ -1,5 +1,6 @@
 package com.master1.newsapplication.androidproject;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
@@ -23,15 +25,31 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mobeta.android.dslv.DragSortListView;
 import com.skydoves.colorpickerpreference.ColorEnvelope;
 import com.skydoves.colorpickerpreference.ColorListener;
 import com.skydoves.colorpickerpreference.ColorPickerDialog;
 import com.skydoves.colorpickerpreference.ColorPickerPreference;
 import com.skydoves.colorpickerpreference.ColorPickerView;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,9 +71,10 @@ public class ControlPanel extends AppCompatPreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-   public static String background_color,toolbar_color,s,f;
+   public static String background_color,toolbar_colorr,toolbar_color,s,f;
    static Set<String> notifications;
-    static Set<String> saved;
+    static Set<String> savecategory;
+    static ArrayList<String> savedd;
    static ArrayList<String> categorie=new ArrayList<>();
    public static ArrayList<String> getcategories()
    {
@@ -74,7 +93,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
        this.toolbar_color=toolbar_color;
        this.notifications=notifications;
    }
-   public String getbackgroundcolor()
+   public static String getBackgroundcolor()
    {
        return background_color;
    }
@@ -90,10 +109,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
    {
        this.toolbar_color=toolbar_color;
    }
-   public Set<String> getNotifications()
-   {
-       return saved;
-   }
+
    public void setNotifications(Set<String> notifications)
    {
        this.notifications=notifications;
@@ -180,6 +196,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+       // System.out.println(background_color);
     }
 
     /**
@@ -225,13 +242,124 @@ public class ControlPanel extends AppCompatPreferenceActivity {
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
+    @SuppressLint("ValidFragment")
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+      SharedPreferences  pref;
+      //  public static String background_color,toolbar_color,s,f;
+        SharedPreferences.Editor editor;
+        public static final String Mypref="pref";
+        public  String color_back="color_back";
+        public  String color_tool="color_tool";
+        public ColorPickerPreference colorPickerPreferencebackground;
+        public ColorPickerPreference colorPickerPreferencetoolbar;
+        public DragSortListView dragSortListView;
+        @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
+            ColorPickerView colorPickerView;
+            pref=getPreferenceManager().getSharedPreferences();
+          //  dragSortListView=(DragSortListView)getPreferenceManager().findPreference("drag");
+            colorPickerPreferencebackground=(ColorPickerPreference)getPreferenceManager().findPreference("BackgroundColorPickerPreference");
+            ColorPickerDialog.Builder builder=colorPickerPreferencebackground.getColorPickerDialogBuilder();
+
+            colorPickerView = builder.getColorPickerView();
+            colorPickerView.setColorListener(new ColorListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void onColorSelected(ColorEnvelope colorEnvelope) {
+                    int a = colorEnvelope.getColor();
+                    s=colorEnvelope.getColorHtml();
+                    Toast.makeText(getContext(),s,Toast.LENGTH_SHORT).show();
+                }
+            });
+            // colorPickerView.setFlagView(new CustomFlag(this.getContext(), R.layout.layout_flag));
+            // colorPickerView.setFlagMode(FlagMode.ALWAYS);
+            //   pref=getPreferenceManager().getSharedPreferences();
+            background_color=colorPickerView.getSavedColorHtml(Color.WHITE);
+          //  Toast.makeText(getContext(),background_color,Toast.LENGTH_SHORT).show();
+            pref = getActivity().getSharedPreferences(Mypref,Context.MODE_PRIVATE);
+            editor=pref.edit();
+            editor.putString(color_back,background_color);
+            editor.commit();
+           // Toast.makeText(this.getContext(),"hiii"+pref.getString(color_back,""),Toast.LENGTH_SHORT).show();
+            background_color=pref.getString(color_back,"");
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+                @Override
+                public void onCancel(DialogInterface dialog) {
+
+                    dialog.dismiss();
+                }
+            });
+            System.out.println("back"+background_color);
+
+
+            //Toolbar
+            colorPickerPreferencetoolbar=(ColorPickerPreference)getPreferenceManager().findPreference("ToolbarColorPickerPreference");
+            ColorPickerDialog.Builder builder1=colorPickerPreferencetoolbar.getColorPickerDialogBuilder();
+            // builder.setFlagView(new CustomFlag(this,R.layout.la));
+            colorPickerView = builder1.getColorPickerView();
+            colorPickerView.setColorListener(new ColorListener() {
+                @Override
+                public void onColorSelected(ColorEnvelope colorEnvelope) {
+                    int a = colorEnvelope.getColor();
+                    f=colorEnvelope.getColorHtml();
+                   Toast.makeText(getContext(),f,Toast.LENGTH_SHORT).show();
+                }
+            });
+            //     colorPickerView.setFlagView(new CustomFlag(this.getContext(), R.layout.layout_flag));
+            //      colorPickerView.setFlagMode(FlagMode.ALWAYS);
+            pref=getPreferenceManager().getSharedPreferences();
+            toolbar_colorr=colorPickerView.getSavedColorHtml(Color.WHITE);
+            pref = getActivity().getSharedPreferences(Mypref,Context.MODE_PRIVATE);
+            editor=pref.edit();
+            editor.putString(color_tool,toolbar_colorr);
+            editor.commit();
+            Toast.makeText(this.getContext(),"hiii"+pref.getString(color_tool,""),Toast.LENGTH_SHORT).show();
+            toolbar_color=pref.getString(color_tool,"");
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+                @Override
+                public void onCancel(DialogInterface dialog) {
+
+                    dialog.dismiss();
+                }
+            });
+            System.out.println("tool"+toolbar_color);
+
+
+
+           try {
+               FileOutputStream fout = getContext().openFileOutput("mot.txt", Context.MODE_PRIVATE);
+
+                OutputStreamWriter osw = new OutputStreamWriter(fout);
+                osw.write(background_color);
+                osw.flush();
+                osw.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+               e.printStackTrace();
+           }
+
+            try {
+                FileOutputStream fout = getContext().openFileOutput("toolbar.txt", Context.MODE_PRIVATE);
+
+                OutputStreamWriter osw = new OutputStreamWriter(fout);
+                osw.write(toolbar_color);
+                osw.flush();
+                osw.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
@@ -258,13 +386,9 @@ public class ControlPanel extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends PreferenceFragment {
-        SharedPreferences pref,sharedPreferences;
-        SharedPreferences.Editor editor;
-        public static final String Mypref="pref";
-        public static String color_back="color_back";
-        public static String color_tool="color_tool";
-        public ColorPickerPreference colorPickerPreferencebackground;
-        public ColorPickerPreference colorPickerPreferencetoolbar;
+        SharedPreferences sharedPreferences;
+
+
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -272,88 +396,62 @@ public class ControlPanel extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_notification);
             setHasOptionsMenu(true);
             sharedPreferences=getPreferenceManager().getSharedPreferences();
-            ColorPickerView colorPickerView;
-
-            colorPickerPreferencebackground=(ColorPickerPreference)getPreferenceManager().findPreference("BackgroundColorPickerPreference");
-            ColorPickerDialog.Builder builder=colorPickerPreferencebackground.getColorPickerDialogBuilder();
-
-            colorPickerView = builder.getColorPickerView();
-            colorPickerView.setColorListener(new ColorListener() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void onColorSelected(ColorEnvelope colorEnvelope) {
-                    int a = colorEnvelope.getColor();
-                    s=colorEnvelope.getColorHtml();
-                    Toast.makeText(getContext(),s,Toast.LENGTH_SHORT).show();
-                }
-            });
-            // colorPickerView.setFlagView(new CustomFlag(this.getContext(), R.layout.layout_flag));
-            // colorPickerView.setFlagMode(FlagMode.ALWAYS);
-            //   pref=getPreferenceManager().getSharedPreferences();
-            background_color=colorPickerView.getSavedColorHtml(Color.WHITE);
-            pref = getActivity().getSharedPreferences(Mypref,Context.MODE_PRIVATE);
-            editor=pref.edit();
-            editor.putString(color_back,background_color);
-            editor.commit();
-            Toast.makeText(this.getContext(),"hiii"+pref.getString(color_back,""),Toast.LENGTH_SHORT).show();
-
-            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-
-                @Override
-                public void onCancel(DialogInterface dialog) {
-
-                    dialog.dismiss();
-                }
-            });
-            //Toolbar
-            colorPickerPreferencetoolbar=(ColorPickerPreference)getPreferenceManager().findPreference("ToolbarColorPickerPreference");
-            ColorPickerDialog.Builder builder1=colorPickerPreferencetoolbar.getColorPickerDialogBuilder();
-            // builder.setFlagView(new CustomFlag(this,R.layout.la));
-            colorPickerView = builder1.getColorPickerView();
-            colorPickerView.setColorListener(new ColorListener() {
-                @Override
-                public void onColorSelected(ColorEnvelope colorEnvelope) {
-                    int a = colorEnvelope.getColor();
-                    f=colorEnvelope.getColorHtml();
-                    Toast.makeText(getContext(),f,Toast.LENGTH_SHORT).show();
-                }
-            });
-            //     colorPickerView.setFlagView(new CustomFlag(this.getContext(), R.layout.layout_flag));
-            //      colorPickerView.setFlagMode(FlagMode.ALWAYS);
-            pref=getPreferenceManager().getSharedPreferences();
-            toolbar_color=colorPickerView.getSavedColorHtml(Color.WHITE);
-            pref = getActivity().getSharedPreferences(Mypref,Context.MODE_PRIVATE);
-            editor=pref.edit();
-            editor.putString(color_tool,toolbar_color);
-            editor.commit();
-            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-
-                @Override
-                public void onCancel(DialogInterface dialog) {
-
-                    dialog.dismiss();
-                }
-            });
+            SharedPreferences.Editor editorr=sharedPreferences.edit();
+              //  Toast.makeText(getContext(),"ooooooooooo",Toast.LENGTH_SHORT).show();
             //notification
+
             notifications=new HashSet<>();
             categorie=getcategories();
             for (String region : categorie)
                 notifications.add(region);
+          /*  for (String region : notifications)
+                System.out.println(region);*/
 
-            MultiSelectListPreference list=(MultiSelectListPreference)getPreferenceManager().findPreference("categorie");
-            saved=sharedPreferences.getStringSet("categorie", (Set<String>) notifications);
+            MultiSelectListPreference list=(MultiSelectListPreference)getPreferenceManager().findPreference("categories");
+            savecategory=  sharedPreferences.getStringSet("categories", (Set<String>) notifications);
+
+            if(savecategory==null) {
+
+                editorr.putStringSet("categories", notifications);
+                editorr.commit();
+                System.out.println(savecategory.toString());
+            }
+            else{
+                System.out.println("limaza");
+                System.out.println(savecategory.toString());
+            }
             Set<String> cat=notifications;
-            CharSequence[] sequences = cat.toArray(new CharSequence[cat.size()]);
 
+            CharSequence[] sequences = cat.toArray(new CharSequence[cat.size()]);
+            try {
+                FileOutputStream fout = getContext().openFileOutput("category.txt", Context.MODE_PRIVATE);
+
+                OutputStreamWriter osw = new OutputStreamWriter(fout);
+
+                osw.write(savecategory.toString());
+                osw.flush();
+                osw.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             list.setEntries(sequences);
             list.setEntryValues(sequences);
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+      /*      for(String catt : savedd)
+                System.out.println(catt);*/
             bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
 
+        public static Set<String> getNotifications()
+        {
+            return savecategory;
+        }
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
