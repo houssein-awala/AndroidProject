@@ -22,6 +22,7 @@
         <activity
             android:name=".ControlPanel"
             android:label="@string/title_activity_control_panel" />
+        <activity android:name=".Notification"></activity>
     </application>
 
 </manifest>
