@@ -1,6 +1,7 @@
 package com.master1.newsapplication.androidproject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,13 +29,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -69,6 +74,31 @@ public class MainActivity extends AppCompatActivity
                     // User is signed in
 
                     Log.d("signed_in", "onAuthStateChanged:signed_in:" + user.getUid());
+                    final SharedPreferences sharedPreferences=getPreferences(MODE_PRIVATE);
+                    if (!sharedPreferences.getBoolean("token",false)) {
+                        new Thread() {
+                            String adress = "https://news-project.000webhostapp.com/addToken.php?token=" + FirebaseInstanceId.getInstance().getToken();
+
+                            @Override
+                            public void run() {
+                                super.run();
+                                System.out.println(adress);
+                                System.out.println(FirebaseInstanceId.getInstance().getToken());
+                                try {
+                                    URL url = new URL(adress);
+                                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                    connection.setRequestMethod("GET");
+                                    connection.connect();
+                                    System.out.println(connection.getResponseMessage());
+                                    sharedPreferences.edit().putBoolean("token",true).commit();
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }.start();
+                    }
                 } else {
                     // User is signed out
                     Log.d("signed_out", "onAuthStateChanged:signed_out");
