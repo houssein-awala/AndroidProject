@@ -39,6 +39,18 @@ public class NewsAdapter extends ArrayAdapter {
         title.setText(objects.get(position).getTitle());
         text.setText(objects.get(position).getNewsText());
         date.setText(objects.get(position).getDate().toString());
+        //System.out.println("hhhhhhhhhhhhh"+objects.get(position).getPathMainPhot());
+        if (!(objects.get(position).getPathMainPhot()).equals(""))
+        {
+            try {
+                Storage storage = new Storage(getContext(), objects.get(position));
+                storage.DownloadMain();
+                if (objects.get(position).getMainPhoto() != null)
+                    image.setImageBitmap(objects.get(position).getMainPhoto());
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
         //id.setText(objects.get(position).getId());
         //id.setVisibility(View.INVISIBLE);
        /* Storage s=new Storage(context);

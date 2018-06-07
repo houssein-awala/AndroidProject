@@ -2,6 +2,7 @@ package com.master1.newsapplication.androidproject;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -25,11 +26,10 @@ public class newsTable extends SQLiteOpenHelper {
     private static final String KEY_TEXT="text";
     private static final String KEY_MAIN_PHOTO="photo";
     private static final String KEY_PHOTOS="photos";
-
-    private static HashMap<String,Date> lastUpdateDate;
+    Context context;
     public newsTable(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        lastUpdateDate=new HashMap<>();
+        this.context=context;
     }
 
     @Override
@@ -131,17 +131,23 @@ public class newsTable extends SQLiteOpenHelper {
             values.put(KEY_TEXT,news.getNewsText());
             values.put(KEY_MAIN_PHOTO,news.getPathMainPhot());
             values.put(KEY_PHOTOS,news.getPathPhotos());
-            db.update(NEWS_TABLE,values,KEY_ID+" = ? AND "+KEY_CATEGORIE+" = ?",new String[]{news.getId(),news.getCategorie()});
+            int a=db.update(NEWS_TABLE,values,KEY_ID+" = ? AND "+KEY_CATEGORIE+" = ?",new String[]{news.getId(),news.getCategorie()});
+            System.out.println("update "+a);
         }
     }
     public Date getLastUpdateDate(String categorie)
     {
-         return lastUpdateDate.get(categorie);
+        SharedPreferences preferences=context.getSharedPreferences("dates",Context.MODE_PRIVATE);
+        String date=preferences.getString(categorie,null);
+        if (date==null)
+            return null;
+         return new Date(date);
     }
 
     public void updateLastUpdateDate(String categorie,Date date)
     {
-        lastUpdateDate.put(categorie,date);
+        SharedPreferences preferences=context.getSharedPreferences("dates",Context.MODE_PRIVATE);
+        preferences.edit().putString(categorie,date.toString()).commit();
     }
 
     public void deleteDeletedNews(ArrayList<NewsIdentifier> newsIdentifiers)

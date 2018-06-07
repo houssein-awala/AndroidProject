@@ -22,7 +22,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 
 public class newsOfCategorie extends Fragment{
@@ -49,9 +52,9 @@ public class newsOfCategorie extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle=getArguments();
-        categorieName=bundle.getString("name");;
+        categorieName=bundle.getString("name");
         adapter=new NewsAdapter(getActivity(),R.layout.news_of_categorie,list);
-        ListView listView=(ListView)view.findViewById(R.id.list_view);
+        ListView listView=(ListView)getView().findViewById(R.id.list_view);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -61,16 +64,21 @@ public class newsOfCategorie extends Fragment{
             }
         });
         listView.setAdapter(adapter);
+        fillList();
+    }
+
+    public void fillList()
+    {
         getAllNews(adapter);
-        SwipeRefreshLayout swipeRefreshLayout=(SwipeRefreshLayout)view.findViewById(R.id.swipe);
+        SwipeRefreshLayout swipeRefreshLayout=(SwipeRefreshLayout)getView().findViewById(R.id.swipe);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getAllNews(adapter);
             }
         });
-    }
 
+    }
     public void getNews(String id, final String categorieName)
     {
 
@@ -115,6 +123,11 @@ public class newsOfCategorie extends Fragment{
                 keys.add(news.getId());
             }
         }
+        /*FullNews news=new FullNews("news1","title1", Calendar.getInstance().getTime(),"ana","text","sport","news/news0.png","");
+        if (!keys.contains(news.getId())) {
+            list.add(0,news);
+            keys.add(news.getId());
+        }*/
         adapter.notifyDataSetChanged();
         Query q;
         if(table.getMaxDate(categorieName)!=null)
@@ -138,7 +151,6 @@ public class newsOfCategorie extends Fragment{
                         if (task.isSuccessful()) {
 
                             QuerySnapshot documentSnapshots=task.getResult();
-
                             for(DocumentSnapshot d:documentSnapshots.getDocuments())
                             {
                                 if (!keys.contains(d.getId())) {
@@ -167,6 +179,43 @@ public class newsOfCategorie extends Fragment{
                         }
                     }
                 });
+        if(table.getLastUpdateDate(categorieName)==null&&table.getMaxDate(categorieName)!=null)
+            table.updateLastUpdateDate(categorieName,table.getMaxDate(categorieName));
+        Query update;
+        if(table.getLastUpdateDate(categorieName)!=null)
+        {
+            update=db.collection("categories")
+                    .document(categorieName)
+                    .collection("News")
+                    .whereGreaterThan("updateDate",table.getLastUpdateDate(categorieName));
+            update.get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            QuerySnapshot documentSnapshots=task.getResult();
+                            Date maxDate=table.getLastUpdateDate(categorieName);
+                            System.out.println("max date= "+maxDate.toString());
+                            ArrayList<FullNews> newsList=new ArrayList<>();
+                            for(DocumentSnapshot d:documentSnapshots.getDocuments())
+                            {
+                                FullNews news = null;
+                                news = new FullNews(d.getId(), d.getString("title"), d.getDate("date"), "", d.getString("text"), categorieName,"","");
+                                Date date=d.getDate("updateDate");
+                                newsList.add(news);
+                                if (date.after(maxDate))
+                                    maxDate=date;
+                                System.out.println(news.toString());
+                            }
+                            if(!newsList.isEmpty()) {
+                                table.updateLastUpdateDate(categorieName, maxDate);
+                                table.update(newsList);
+                                fillList();
+                            }
+                        }
+                    });
+        }
 
-}
+
+
+    }
 }

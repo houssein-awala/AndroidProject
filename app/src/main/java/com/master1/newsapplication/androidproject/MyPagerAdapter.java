@@ -21,7 +21,6 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public android.support.v4.app.Fragment getItem(int position) {
-        System.out.println(position);
         Bundle bundle=new Bundle();
         newsOfCategorie categorie=new newsOfCategorie();
         bundle.putString("name",list.get(position));
