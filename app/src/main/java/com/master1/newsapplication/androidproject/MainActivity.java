@@ -1,9 +1,7 @@
 package com.master1.newsapplication.androidproject;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -29,25 +27,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Set<String> nameOfCategoriesFromFirebase;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -55,6 +42,7 @@ public class MainActivity extends AppCompatActivity
     private NewsAdapter adapter;
     private FirebaseDatabase database;
     private HashMap<String,News> map;
+    private ArrayList<String> nameOfCategoriesFromFirebase;
     // release listener in onStop
     @Override
     public void onStop() {
@@ -73,38 +61,13 @@ public class MainActivity extends AppCompatActivity
           *START
         */
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    System.out.println(user.getUid());
-                    System.out.println("token "+ FirebaseInstanceId.getInstance().getToken());
-                    final String address="http://172.20.10.3/firebase/addToken.php?token="+FirebaseInstanceId.getInstance().getToken();
-                    Toast.makeText(MainActivity.this, address, Toast.LENGTH_SHORT).show();
-                    
-                    new Thread()
-                    {
-                        @Override
-                        public void run() {
-                            super.run();
-                            try {
-                                System.out.println(address);
-                                URL url=new URL(address);
-                                HttpURLConnection connection=(HttpURLConnection) url.openConnection();
-                                connection.setRequestMethod("GET");
-                                System.out.println(connection.getResponseMessage());
-                                connection.connect();
-                            } catch (MalformedURLException e) {
-                                System.out.println(e.getMessage());
 
-                            } catch (IOException e) {
-                                System.out.println(e.getMessage());
-                            }
-                        }
-                    }.start();
                     Log.d("signed_in", "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
@@ -138,7 +101,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //call methode
-
+        addMenuItemInNavMenuDrawer();
 
         //SETUP THE PAGER
         PagerFrag frag=new PagerFrag();
@@ -153,31 +116,9 @@ public class MainActivity extends AppCompatActivity
         newsTable table=new newsTable(this);
         //table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
         //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
+        System.out.println("max " +table.getMaxDate("sport"));
         //end test
-        //nameOfCategoriesFromFirebase=getPreferences(MODE_PRIVATE).getStringSet("categories",new HashSet<String>());
-        //Toast.makeText(this, nameOfCategoriesFromFirebase.toString(), Toast.LENGTH_SHORT).show();
-            nameOfCategoriesFromFirebase=new HashSet<>();
-            db.collection("categories").get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            QuerySnapshot documentSnapshots=task.getResult();
-                            for(DocumentSnapshot d:documentSnapshots.getDocuments())
-                            {
-                                nameOfCategoriesFromFirebase.add(d.getId());
-                               // Toast.makeText(MainActivity.this, d.getId(), Toast.LENGTH_SHORT).show();
-                            }
-                            /*if(getPreferences(MODE_PRIVATE).edit().putStringSet("categories",nameOfCategoriesFromFirebase).commit())
-                            {
-                                Toast.makeText(MainActivity.this, nameOfCategoriesFromFirebase.toString(), Toast.LENGTH_SHORT).show();
-                            }*/
-                            addMenuItemInNavMenuDrawer();
-                        }
-                    });
-
-
     }
-
 
     @Override
     public void onBackPressed() {
@@ -251,9 +192,6 @@ public class MainActivity extends AppCompatActivity
                             Log.w("Failed", "Failed : ", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
-                        else {
-                           // System.out.println();
-                        }
 
 
                     }
@@ -268,9 +206,14 @@ public class MainActivity extends AppCompatActivity
         pager.setAdapter(adapter);
     }
     //methode mn database btrj3 arrayist mn lcategorie
-    public Set<String> getName()
+    public ArrayList<String> getName()
     {
-        return nameOfCategoriesFromFirebase;
+        ArrayList<String> categories=new ArrayList<>();
+        categories.add("sport");
+        categories.add("arts");
+        categories.add("policy");
+        categories.add("economie");
+        return categories;
     }
     //methode pour remplir navigation view dynamic
     private void addMenuItemInNavMenuDrawer() {
@@ -278,7 +221,7 @@ public class MainActivity extends AppCompatActivity
 
         Menu menu = navView.getMenu();
         Menu submenu = menu.addSubMenu("Categorie");
-        Set<String> categories=getName();
+        ArrayList<String> categories=getName();
         int i=0;
         for(String categorie  : categories)
         {

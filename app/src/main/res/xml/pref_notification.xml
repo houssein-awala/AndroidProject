@@ -24,30 +24,10 @@
         android:dependency="notifications_new_message"
         android:key="notifications_new_message_vibrate"
         android:title="@string/pref_title_vibrate" />
-    <MultiSelectListPreference
-        android:key="categorie"
-        android:title="@string/notification"
-      />
-    <com.skydoves.colorpickerpreference.ColorPickerPreference
-        android:key="BackgroundColorPickerPreference"
-        android:title="@string/background_Color"
-        android:summary="@string/changes_background_color"
-        app:preference_dialog_title="@string/Background_ColorPickerDialog"
-        app:preference_dialog_positive="@string/confirm"
-        app:preference_dialog_negative="@string/cancel"
-        app:preference_palette="@drawable/palette"
-        app:preference_selector="@drawable/wheel"
-        app:default_color="@color/colorPrimary"/>
 
-    <com.skydoves.colorpickerpreference.ColorPickerPreference
-        android:key="ToolbarColorPickerPreference"
-        android:title="@string/Toolbar_Color"
-        android:summary="@string/changes_toolbar_color"
-        app:preference_dialog_title="Toolbar ColorPickerDialog"
-        app:preference_dialog_positive="@string/confirm"
-        app:preference_dialog_negative="@string/cancel"
-        app:preference_palette="@drawable/palette"
-        app:preference_selector="@drawable/wheel"
-        app:default_color="@color/colorPrimary"/>
+    <MultiSelectListPreference
+        android:key="categories"
+        android:title="@string/notification"
+        />
 
 </PreferenceScreen>
