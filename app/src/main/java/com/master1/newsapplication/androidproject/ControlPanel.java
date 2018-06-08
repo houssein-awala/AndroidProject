@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +20,7 @@ import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -80,6 +82,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
     static Set<String> savecategory;
     static ArrayList<String> savedd;
    static ArrayList<String> categorie=new ArrayList<>();
+   static Fragment fragment;
    public static ArrayList<String> getcategories()
    {
 
@@ -432,12 +435,15 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                     }
                     return true;
                 }
+                @SuppressLint("StaticFieldLeak")
                 void sendToServer(final String categorie, final String option){
+                    final String adress = "http://news-project.000webhostapp.com/editCategorie.php?token="
+                            +FirebaseInstanceId.getInstance().getToken()
+                            +"&categorie="+categorie
+                            + "&option="+option;
+                    //Toast.makeText(getContext(), adress, Toast.LENGTH_SHORT).show();
                     new Thread() {
-                        String adress = "http://news-project.000webhostapp.com/editCategorie.php?token="
-                                +FirebaseInstanceId.getInstance().getToken()
-                                +"&categorie="+categorie
-                                + "&option="+option;
+
 
                         @Override
                         public void run() {
@@ -447,7 +453,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                                 connection.setRequestMethod("GET");
                                 connection.connect();
-                              //  System.out.println(connection.getResponseMessage());
+                                System.out.println(connection.getResponseMessage());
                                // System.out.println(adress);
 
                             } catch (MalformedURLException e) {

@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
         //System.out.println("max " +table.getMaxDate("sport"));
         //end test
         Set<String> categs=preferences.getStringSet("categories",null);
-        if (categs==null) {
+        if (categs==null||categs.size()==0) {
             FirebaseFirestore.getInstance().collection("categories").get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override

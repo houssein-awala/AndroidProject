@@ -41,6 +41,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                     connection.setRequestMethod("GET");
                     connection.connect();
                     preferences.edit().putString("token",token).commit();
+                    connection.getResponseMessage();
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();

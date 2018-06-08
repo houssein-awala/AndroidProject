@@ -158,4 +158,23 @@ public class newsTable extends SQLiteOpenHelper {
             db.delete(NEWS_TABLE,KEY_ID+" = ? AND "+KEY_CATEGORIE+" = ?",new String[]{news.getId(),news.getCategorie()});
         }
     }
+
+    public ArrayList<FullNews> getAllNewOfCategorie(String categorie, String text) {
+        SQLiteDatabase db=getReadableDatabase();
+        Cursor cursor=db.query(NEWS_TABLE,new String[]{KEY_ID,KEY_TITLE,KEY_DATE,KEY_AUTHOR,KEY_TEXT,KEY_CATEGORIE,KEY_MAIN_PHOTO,KEY_PHOTOS,
+        },KEY_CATEGORIE+" = ? and "+KEY_TITLE+" LIKE %"+text+"%",new String[]{categorie},null,null, KEY_DATE );
+        ArrayList<FullNews> news=new ArrayList<>();
+        if (cursor.moveToFirst())
+        {
+            do {
+                FullNews news1=new FullNews(cursor.getString(0),cursor.getString(1),
+                        new Date(cursor.getString(2)),cursor.getString(3),cursor.getString(4),
+                        cursor.getString(5),cursor.getString(6),cursor.getString(7));
+                news.add(news1);
+            }while (cursor.moveToNext());
+
+        }
+        db.close();
+        return news;
+    }
 }
