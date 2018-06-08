@@ -38,15 +38,21 @@ public class Storage {
     public void DownloadMain() throws IOException {
 
         final File localFile = new File(path+File.pathSeparatorChar+"main.png");
-        System.out.println(localFile.getAbsolutePath());
-        //System.out.println("sssssssssssssssss"+news.getPathMainPhot());
-        StorageReference riversRef = mStorageRef.child(news.getPathMainPhot());
+        if (localFile.exists())
+        {
+            news.setMainPhoto(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+            return;
+        }
+
+       // System.out.println(localFile.getAbsolutePath());
+     //   System.out.println(news.getPathMainPhot());
+        StorageReference riversRef = mStorageRef.child("images/"+news.getId()+"/Main.jpg");
         riversRef.getFile(localFile)
                 .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                         news.setMainPhoto(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                        System.out.println("cccc");
+                       // System.out.println("cccc");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override

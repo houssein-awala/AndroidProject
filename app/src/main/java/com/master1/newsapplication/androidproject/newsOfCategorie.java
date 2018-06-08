@@ -156,7 +156,7 @@ public class newsOfCategorie extends Fragment{
                                 if (!keys.contains(d.getId())) {
                                     FullNews news = null;
                                     news = new FullNews(d.getId(), d.getString("title"), d.getDate("date"), "", d.getString("text"), categorieName,"","");
-                                    System.out.println(d.getDate("date"));
+                                   // System.out.println(d.getDate("date"));
                                     list.add(0, news);
                                     keys.add(d.getId());
                                    table.insertNews(news);
@@ -194,7 +194,7 @@ public class newsOfCategorie extends Fragment{
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             QuerySnapshot documentSnapshots=task.getResult();
                             Date maxDate=table.getLastUpdateDate(categorieName);
-                            System.out.println("max date= "+maxDate.toString());
+                           // System.out.println("max date= "+maxDate.toString());
                             ArrayList<FullNews> newsList=new ArrayList<>();
                             for(DocumentSnapshot d:documentSnapshots.getDocuments())
                             {
@@ -204,7 +204,7 @@ public class newsOfCategorie extends Fragment{
                                 newsList.add(news);
                                 if (date.after(maxDate))
                                     maxDate=date;
-                                System.out.println(news.toString());
+                              //  System.out.println(news.toString());
                             }
                             if(!newsList.isEmpty()) {
                                 table.updateLastUpdateDate(categorieName, maxDate);

@@ -31,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.mobeta.android.dslv.DragSortListView;
 import com.skydoves.colorpickerpreference.ColorEnvelope;
 import com.skydoves.colorpickerpreference.ColorListener;
@@ -48,6 +49,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -79,11 +83,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
    public static ArrayList<String> getcategories()
    {
 
-       categorie.add("Sport");
-       categorie.add("Arts");
-       categorie.add("Policy");
-       categorie.add("Economie");
-       return categorie;
+       return MainActivity.categories;
    }
    public ControlPanel()
    {}
@@ -273,7 +273,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                 public void onColorSelected(ColorEnvelope colorEnvelope) {
                     int a = colorEnvelope.getColor();
                     s=colorEnvelope.getColorHtml();
-                    Toast.makeText(getContext(),s,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(),s,Toast.LENGTH_SHORT).show();
                 }
             });
             // colorPickerView.setFlagView(new CustomFlag(this.getContext(), R.layout.layout_flag));
@@ -292,10 +292,11 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                 @Override
                 public void onCancel(DialogInterface dialog) {
 
+                    //System.out.println("hon");
                     dialog.dismiss();
                 }
             });
-            System.out.println("back"+background_color);
+           // System.out.println("back"+background_color);
 
 
             //Toolbar
@@ -308,7 +309,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                 public void onColorSelected(ColorEnvelope colorEnvelope) {
                     int a = colorEnvelope.getColor();
                     f=colorEnvelope.getColorHtml();
-                   Toast.makeText(getContext(),f,Toast.LENGTH_SHORT).show();
+                  // Toast.makeText(getContext(),f,Toast.LENGTH_SHORT).show();
                 }
             });
             //     colorPickerView.setFlagView(new CustomFlag(this.getContext(), R.layout.layout_flag));
@@ -319,7 +320,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
             editor=pref.edit();
             editor.putString(color_tool,toolbar_colorr);
             editor.commit();
-            Toast.makeText(this.getContext(),"hiii"+pref.getString(color_tool,""),Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this.getContext(),"hiii"+pref.getString(color_tool,""),Toast.LENGTH_SHORT).show();
             toolbar_color=pref.getString(color_tool,"");
             builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
@@ -329,7 +330,7 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                     dialog.dismiss();
                 }
             });
-            System.out.println("tool"+toolbar_color);
+            //System.out.println("tool"+toolbar_color);
 
 
 
@@ -408,17 +409,67 @@ public class ControlPanel extends AppCompatPreferenceActivity {
                 System.out.println(region);*/
 
             MultiSelectListPreference list=(MultiSelectListPreference)getPreferenceManager().findPreference("categories");
+            list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    MultiSelectListPreference pref = (MultiSelectListPreference) preference;
+                    HashSet<String> old=(HashSet<String>)pref.getValues();
+                    HashSet<String> neww=(HashSet<String>)newValue;
+
+                    for (String categorie:old)
+                    {
+                        if(!neww.contains(categorie))
+                        {
+                            sendToServer(categorie,"OFF");
+                        }
+                    }
+                    for (String categorie:neww)
+                    {
+                        if(!old.contains(categorie))
+                        {
+                            sendToServer(categorie,"ON");
+                        }
+                    }
+                    return true;
+                }
+                void sendToServer(final String categorie, final String option){
+                    new Thread() {
+                        String adress = "http://news-project.000webhostapp.com/editCategorie.php?token="
+                                +FirebaseInstanceId.getInstance().getToken()
+                                +"&categorie="+categorie
+                                + "&option="+option;
+
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                URL url = new URL(adress);
+                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection.setRequestMethod("GET");
+                                connection.connect();
+                              //  System.out.println(connection.getResponseMessage());
+                               // System.out.println(adress);
+
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
+                }
+            });
             savecategory=  sharedPreferences.getStringSet("categories", (Set<String>) notifications);
 
             if(savecategory==null) {
 
                 editorr.putStringSet("categories", notifications);
                 editorr.commit();
-                System.out.println(savecategory.toString());
+                //System.out.println(savecategory.toString());
             }
             else{
-                System.out.println("limaza");
-                System.out.println(savecategory.toString());
+                /*System.out.println("limaza");
+                System.out.println(savecategory.toString());*/
             }
             Set<String> cat=notifications;
 

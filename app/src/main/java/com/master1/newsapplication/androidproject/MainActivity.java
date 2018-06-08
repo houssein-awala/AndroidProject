@@ -3,6 +3,9 @@ package com.master1.newsapplication.androidproject;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,7 +32,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
@@ -37,6 +43,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,7 +55,8 @@ public class MainActivity extends AppCompatActivity
     private NewsAdapter adapter;
     private FirebaseDatabase database;
     private HashMap<String,News> map;
-    private ArrayList<String> nameOfCategoriesFromFirebase;
+    public static ArrayList<String> categories;
+    SharedPreferences preferences;
     // release listener in onStop
     @Override
     public void onStop() {
@@ -61,11 +70,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        preferences=getPreferences(MODE_PRIVATE);
         // ...
         /* AUTHENTICATION
           *START
         */
         mAuth = FirebaseAuth.getInstance();
+        categories=new ArrayList<>();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -74,23 +85,25 @@ public class MainActivity extends AppCompatActivity
                     // User is signed in
 
                     Log.d("signed_in", "onAuthStateChanged:signed_in:" + user.getUid());
-                    final SharedPreferences sharedPreferences=getPreferences(MODE_PRIVATE);
-                    if (!sharedPreferences.getBoolean("token",false)) {
+                    final SharedPreferences sharedPreferences=getSharedPreferences("token",MODE_PRIVATE);
+                    if (sharedPreferences.getString("token",null)==null) {
+                        System.out.println("fet");
                         new Thread() {
                             String adress = "https://news-project.000webhostapp.com/addToken.php?token=" + FirebaseInstanceId.getInstance().getToken();
 
                             @Override
                             public void run() {
                                 super.run();
-                                System.out.println(adress);
-                                System.out.println(FirebaseInstanceId.getInstance().getToken());
+                                //System.out.println(adress);
+                                //System.out.println(FirebaseInstanceId.getInstance().getToken());
                                 try {
                                     URL url = new URL(adress);
                                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                                     connection.setRequestMethod("GET");
                                     connection.connect();
                                     System.out.println(connection.getResponseMessage());
-                                    sharedPreferences.edit().putBoolean("token",true).commit();
+                                    sharedPreferences.edit().putString("token",FirebaseInstanceId.getInstance().getToken()).commit();
+                                    System.out.println("done");
                                 } catch (MalformedURLException e) {
                                     e.printStackTrace();
                                 } catch (IOException e) {
@@ -131,23 +144,71 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //call methode
-        addMenuItemInNavMenuDrawer();
 
-        //SETUP THE PAGER
-        PagerFrag frag=new PagerFrag();
-        FragmentManager manager=getSupportFragmentManager();
-        FragmentTransaction trans=manager.beginTransaction();
-        trans.replace(R.id.Fullcontainer,frag);
-        trans.commit();
+
+
 
 
             //test db
 
-        newsTable table=new newsTable(this);
+        //newsTable table=new newsTable(this);
         //table.insertNews(new FullNews("1","title",new Date(2018,05,12,0,0,0),"HUSSEIN AWALA","TEXT","sport","/","/"));
         //Toast.makeText(this, table.getAllNewOfCategorie("sport").get(0).toString(), Toast.LENGTH_SHORT).show();
-        System.out.println("max " +table.getMaxDate("sport"));
+        //System.out.println("max " +table.getMaxDate("sport"));
         //end test
+        Set<String> categs=preferences.getStringSet("categories",null);
+        if (categs==null) {
+            FirebaseFirestore.getInstance().collection("categories").get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+
+                                QuerySnapshot documentSnapshots = task.getResult();
+                                System.out.println("aya shi");
+                                for (DocumentSnapshot d : documentSnapshots.getDocuments()) {
+                                    categories.add(d.getId());
+                                    System.out.println(d.getId());
+                                }
+
+                                //SETUP THE PAGER
+                                PagerFrag frag = new PagerFrag();
+                                FragmentManager manager = getSupportFragmentManager();
+                                FragmentTransaction trans = manager.beginTransaction();
+                                trans.replace(R.id.Fullcontainer, frag);
+                                trans.commit();
+
+                                addMenuItemInNavMenuDrawer();
+                                preferences.edit().putStringSet("categories",new HashSet<String>(categories)).commit();
+                            }
+                        }
+                    });
+        }
+        else {
+            categories=new ArrayList<>(categs);
+            PagerFrag frag = new PagerFrag();
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction trans = manager.beginTransaction();
+            trans.replace(R.id.Fullcontainer, frag);
+            trans.commit();
+
+            addMenuItemInNavMenuDrawer();
+        }
+
+        //ghina
+
+        /*getSupportActionBar().setBackgroundDrawable(
+                new ColorDrawable(Color.rgb(100
+                        ,100,100)));*/
+
+
+        /*Window window = this.getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(Color.rgb(100
+                    , 100, 100));
+        }*/
+
+
     }
 
     @Override
@@ -188,9 +249,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        nameOfCategoriesFromFirebase = getName();
         String t = item.getTitle().toString();
-        for (String categorie : nameOfCategoriesFromFirebase) {
+        for (String categorie : categories) {
             if (t.toLowerCase() .equals( categorie.toLowerCase())) {
                 Bundle bundle=new Bundle();
                 newsOfCategorie cat=new newsOfCategorie();
@@ -236,13 +296,8 @@ public class MainActivity extends AppCompatActivity
         pager.setAdapter(adapter);
     }
     //methode mn database btrj3 arrayist mn lcategorie
-    public ArrayList<String> getName()
+    public static ArrayList<String> getName()
     {
-        ArrayList<String> categories=new ArrayList<>();
-        categories.add("sport");
-        categories.add("arts");
-        categories.add("policy");
-        categories.add("economie");
         return categories;
     }
     //methode pour remplir navigation view dynamic
@@ -251,10 +306,9 @@ public class MainActivity extends AppCompatActivity
 
         Menu menu = navView.getMenu();
         Menu submenu = menu.addSubMenu("Categorie");
-        ArrayList<String> categories=getName();
-        int i=0;
-        for(String categorie  : categories)
+        for(int i=3;i<categories.size();i++)
         {
+            String categorie=categories.get(i);
             //   submenu.add(categorie);
             //    submenu.add(0, Integer.parseInt(categorie),1,categorie);
             submenu.add(R.id.gp,1,1,categorie.toUpperCase());

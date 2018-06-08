@@ -12,11 +12,12 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 
     public MyPagerAdapter(FragmentManager fm) {
         super(fm);
-        list=new ArrayList<>();
+        /*list=new ArrayList<>();
         list.add("sport");
-        list.add("economie");
+        list.add("politics");
         list.add("test");
-        list.add("bati5");
+        list.add("bati5");*/
+        list=MainActivity.categories;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     }
     @Override
     public int getCount() {
-        return list.size();
+        return list.size()>3?3:list.size();
     }
 
     public CharSequence getPageTitle(int position) {

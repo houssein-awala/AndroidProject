@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class NewsDetails extends Fragment
@@ -33,8 +35,14 @@ public class NewsDetails extends Fragment
             author=view.findViewById(R.id.detailsAuthor);
             text=view.findViewById(R.id.detailsText);
             text.setText(news.getNewsText());
+        try {
+            new Storage(getContext(),news).DownloadMain();
             mainPhoto=view.findViewById(R.id.detailsMainPhoto);
             mainPhoto.setImageBitmap(news.getMainPhoto());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
             photos=view.findViewById(R.id.detailsPhotos);
             //getPhotos();
         return view;

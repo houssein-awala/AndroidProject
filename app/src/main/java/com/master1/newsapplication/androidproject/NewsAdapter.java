@@ -40,7 +40,7 @@ public class NewsAdapter extends ArrayAdapter {
         text.setText(objects.get(position).getNewsText());
         date.setText(objects.get(position).getDate().toString());
         //System.out.println("hhhhhhhhhhhhh"+objects.get(position).getPathMainPhot());
-        if (!(objects.get(position).getPathMainPhot()).equals(""))
+       // if (!(objects.get(position).getPathMainPhot()).equals(""))
         {
             try {
                 Storage storage = new Storage(getContext(), objects.get(position));
